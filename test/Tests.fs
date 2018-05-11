@@ -3,7 +3,6 @@ module Tests
 open Xunit
 open Domain
 open ResultType
-open Domain
 
 [<Fact>]
 let ``Value of progress must not be less than 0`` () =

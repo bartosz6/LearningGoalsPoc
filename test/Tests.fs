@@ -3,6 +3,7 @@ module Tests
 open Xunit
 open Domain
 open ResultType
+open Domain
 
 [<Fact>]
 let ``Value of progress must not be less than 0`` () =
@@ -28,6 +29,24 @@ let ``Default value of progress for Goal is 0`` () =
 let ``Description is being set for Goal`` () =
     let goal = Goal.create List.empty "desc" |> payload
     Assert.True(goal.Description = "desc");
-    
 
- 
+[<Fact>]
+let ``AddGoal adds subgoal to the beggining of subgoal list`` () =
+    let subGoal = Goal.create List.Empty "old subgoal" |> payload
+    let goal = Goal.create ([ subGoal ]) "goal" |> payload
+    let newSubgoal = Goal.create List.empty "sub goal" |> payload
+
+    let newGoal = Goal.addSubgoal goal newSubgoal |> payload
+
+    Assert.True(newGoal.SubGoals.[0] = newSubgoal);
+    Assert.True(newGoal.SubGoals.[1] = subGoal);
+
+[<Fact>]
+let ``AddGoal does not allow duplicates`` () =
+    let subGoal = Goal.create List.Empty "old subgoal" |> payload
+    let goal = Goal.create ([ subGoal ]) "goal" |> payload
+    let newSubgoal = Goal.create List.empty "old subgoal" |> payload
+
+    let result = Goal.addSubgoal goal newSubgoal
+
+    Assert.True(isFailure result);

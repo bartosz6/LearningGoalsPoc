@@ -62,7 +62,7 @@ open CQRS
 open CQRS.QueryHandler
 
 [<Fact>]
-let ``test q handler`` () =
+let ``GetGoalById query is being resolved`` () =
     let id = Guid.NewGuid()
     let query : GetGoalById.Query =  { Id = id }
 
@@ -71,7 +71,7 @@ let ``test q handler`` () =
     Assert.Equal(id, Goal.id result);
 
 [<Fact>]
-let ``test q handler2`` () =
+let ``GetGoalProgressByGoalId is being resolved`` () =
     let id = Guid.NewGuid()
     let query : GetGoalProgressByGoalId.Query =  { Id = id }
     let expectedProgress = Progress.create 13 |> payload;
@@ -83,7 +83,7 @@ let ``test q handler2`` () =
 
 type private  UnknownQuery = { Id : string }
 [<Fact>]
-let ``test q handler3`` () =
+let ``Throws on not registered query`` () =
     let query : UnknownQuery= { Id = "test" }
 
     Assert.Throws<System.NotImplementedException>(fun () -> handle query |> ignore) |> ignore;

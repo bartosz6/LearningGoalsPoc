@@ -22,12 +22,12 @@ let ``Value of progress must be between 0 and 100`` () =
 [<Fact>]
 let ``Default value of progress for Goal is 0`` () =
     let goal = Goal.create List.empty "desc" |> payload
-    Assert.True(goal.Progress = (Progress.create 0 |> payload));
+    Assert.True(Goal.Progress goal = (Progress.create 0 |> payload));
 
 [<Fact>]
 let ``Description is being set for Goal`` () =
     let goal = Goal.create List.empty "desc" |> payload
-    Assert.True(goal.Description = "desc");
+    Assert.True(Goal.Description goal = "desc");
 
 [<Fact>]
 let ``AddGoal adds subgoal to the beggining of subgoal list`` () =
@@ -37,8 +37,8 @@ let ``AddGoal adds subgoal to the beggining of subgoal list`` () =
 
     let newGoal = Goal.addSubgoal goal newSubgoal |> payload
 
-    Assert.True(newGoal.SubGoals.[0] = newSubgoal);
-    Assert.True(newGoal.SubGoals.[1] = subGoal);
+    Assert.True(Goal.SubGoals newGoal |> List.item 0 = newSubgoal);
+    Assert.True(Goal.SubGoals newGoal |> List.item 1  = subGoal);
 
 [<Fact>]
 let ``AddGoal does not allow duplicates`` () =

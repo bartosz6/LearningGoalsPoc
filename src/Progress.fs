@@ -1,7 +1,7 @@
 namespace Domain
 open ResultType
 
-type Progress = Progress of int
+type Progress = private Progress of int
 module Progress =
     let create value = 
         match value with

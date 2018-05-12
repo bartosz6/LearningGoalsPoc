@@ -3,6 +3,13 @@ module Tests
 open Xunit
 open Domain
 open ResultType
+open System
+
+
+let private payload result =
+    match result with
+    | Success payload -> payload
+    | _ -> raise (System.InvalidOperationException("cannot access payload of failure!"))
 
 [<Fact>]
 let ``Value of progress must not be less than 0`` () =
@@ -21,30 +28,32 @@ let ``Value of progress must be between 0 and 100`` () =
 
 [<Fact>]
 let ``Default value of progress for Goal is 0`` () =
-    let goal = Goal.create List.empty "desc" |> payload
-    Assert.True(Goal.Progress goal = (Progress.create 0 |> payload));
+    let goal = Goal.create (Guid.NewGuid()) List.empty "desc" |> payload
+    Assert.True(Goal.progress goal = (Progress.create 0 |> payload));
 
 [<Fact>]
 let ``Description is being set for Goal`` () =
-    let goal = Goal.create List.empty "desc" |> payload
-    Assert.True(Goal.Description goal = "desc");
+    let goal = Goal.create (Guid.NewGuid()) List.empty "desc" |> payload
+    Assert.True(Goal.description goal = "desc");
 
 [<Fact>]
 let ``AddGoal adds subgoal to the beggining of subgoal list`` () =
-    let subGoal = Goal.create List.Empty "old subgoal" |> payload
-    let goal = Goal.create ([ subGoal ]) "goal" |> payload
-    let newSubgoal = Goal.create List.empty "sub goal" |> payload
+    
+    let subGoal = Goal.create (Guid.NewGuid()) List.Empty "old subgoal" |> payload
+    let goal = Goal.create (Guid.NewGuid()) ([ subGoal ]) "goal" |> payload
+    let newSubgoal = Goal.create (Guid.NewGuid()) List.empty "sub goal" |> payload
 
     let newGoal = Goal.addSubgoal goal newSubgoal |> payload
 
-    Assert.True(Goal.SubGoals newGoal |> List.item 0 = newSubgoal);
-    Assert.True(Goal.SubGoals newGoal |> List.item 1  = subGoal);
+    Assert.True(Goal.subGoals newGoal |> List.item 0 = newSubgoal);
+    Assert.True(Goal.subGoals newGoal |> List.item 1  = subGoal);
 
 [<Fact>]
 let ``AddGoal does not allow duplicates`` () =
-    let subGoal = Goal.create List.Empty "old subgoal" |> payload
-    let goal = Goal.create ([ subGoal ]) "goal" |> payload
-    let newSubgoal = Goal.create List.empty "old subgoal" |> payload
+    let subGoalsGuid =  Guid.NewGuid();
+    let subGoal = Goal.create subGoalsGuid List.Empty "old subgoal" |> payload
+    let goal = Goal.create (Guid.NewGuid()) ([ subGoal ]) "goal" |> payload
+    let newSubgoal = Goal.create subGoalsGuid List.empty "old subgoal" |> payload
 
     let result = Goal.addSubgoal goal newSubgoal
 

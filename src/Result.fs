@@ -13,11 +13,6 @@ module ResultType
     let failure errors =
         Failure errors
 
-    let payload result =
-        match result with
-        | Success payload -> payload
-        | _ -> raise (System.InvalidOperationException("cannot access payload of failure!"))
-
     let isSuccess result =
         match result with
         | Success _ -> true

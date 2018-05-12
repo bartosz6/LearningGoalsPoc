@@ -1,7 +1,6 @@
 namespace Domain
 open ResultType
 open System
-open System
 
 type Goal = private {
         Id: Guid;

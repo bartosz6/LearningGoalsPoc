@@ -6,5 +6,6 @@
     <Compile Include="Result.fs" />
     <Compile Include="Progress.fs" />
     <Compile Include="Goal.fs" />
+    <Compile Include="CommandHandler.fs" />
   </ItemGroup>
 </Project>

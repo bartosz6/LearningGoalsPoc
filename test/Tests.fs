@@ -5,7 +5,6 @@ open Domain
 open ResultType
 open System
 
-
 let private payload result =
     match result with
     | Success payload -> payload
@@ -58,3 +57,24 @@ let ``AddGoal does not allow duplicates`` () =
     let result = Goal.addSubgoal goal newSubgoal
 
     Assert.True(isFailure result);
+
+open CQRS.QueryHandler
+
+[<Fact>]
+let ``test q handler`` () =
+    let id = Guid.NewGuid()
+    let query = Query.GetGoalById { Id = id }
+
+    let result = handle query |> payload
+
+    Assert.Equal(id, Goal.id result);
+
+[<Fact>]
+let ``test q handler2`` () =
+    let id = Guid.NewGuid()
+    let query = Query.GetGoalProgressByGoalId { Id = id }
+    let expectedProgress = Progress.create 13 |> payload;
+    
+    let result = handle query |> payload
+
+    Assert.Equal(expectedProgress, result);

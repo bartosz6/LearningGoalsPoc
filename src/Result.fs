@@ -19,3 +19,13 @@ module ResultType
         | _ -> false
     
     let isFailure result = isSuccess result |> not
+
+    let cast<'T> result = 
+        let cast (x:obj) = 
+            match x with
+            | :? 'T as t -> t
+            | _ -> raise (System.InvalidOperationException("invalid type cast"))
+
+        match result with 
+        | Success x -> Success <| cast x
+        | Failure x -> Failure x

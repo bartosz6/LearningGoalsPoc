@@ -58,12 +58,13 @@ let ``AddGoal does not allow duplicates`` () =
 
     Assert.True(isFailure result);
 
+open CQRS
 open CQRS.QueryHandler
 
 [<Fact>]
 let ``test q handler`` () =
     let id = Guid.NewGuid()
-    let query = Query.GetGoalById { Id = id }
+    let query : GetGoalById.Query =  { Id = id }
 
     let result = handle query |> payload
 
@@ -72,9 +73,17 @@ let ``test q handler`` () =
 [<Fact>]
 let ``test q handler2`` () =
     let id = Guid.NewGuid()
-    let query = Query.GetGoalProgressByGoalId { Id = id }
+    let query : GetGoalProgressByGoalId.Query =  { Id = id }
     let expectedProgress = Progress.create 13 |> payload;
     
     let result = handle query |> payload
 
     Assert.Equal(expectedProgress, result);
+
+
+type private  UnknownQuery = { Id : string }
+[<Fact>]
+let ``test q handler3`` () =
+    let query : UnknownQuery= { Id = "test" }
+
+    Assert.Throws<System.NotImplementedException>(fun () -> handle query |> ignore) |> ignore;

@@ -1,5 +1,6 @@
 namespace CQRS
 
+open System
 module CreateGoal =
     open ResultType
 
@@ -17,7 +18,6 @@ module CommandHandler =
         | CreateGoal c -> CreateGoal.handle c
 
 module GetGoalById =
-    open System
     open Domain
 
     type Query = { Id : Guid }
@@ -25,7 +25,6 @@ module GetGoalById =
         Goal.create query.Id List.Empty "placeholder"
 
 module GetGoalProgressByGoalId =
-    open System
     open Domain
 
     type Query = { Id : Guid }
@@ -33,12 +32,11 @@ module GetGoalProgressByGoalId =
         Progress.create 13
 
 module QueryHandler = 
-    type Query =
-    | GetGoalById of GetGoalById.Query
-    | GetGoalProgressByGoalId of GetGoalProgressByGoalId.Query
-    let handle<'T> query =
+    let handle<'T> (query:obj) =
         let result = 
             match query with
-            | GetGoalById q -> GetGoalById.handle q :> obj
-            | GetGoalProgressByGoalId q -> GetGoalProgressByGoalId.handle q :> obj
+            | :? GetGoalById.Query as q -> GetGoalById.handle q :> obj
+            | :? GetGoalProgressByGoalId.Query as q -> GetGoalProgressByGoalId.handle q :> obj
+            
+            | _ -> raise (new NotImplementedException("handler for that query is not implemented"))
         result :?> ResultType.Result<'T>

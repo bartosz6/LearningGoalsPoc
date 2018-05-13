@@ -32,11 +32,11 @@ module GetGoalProgressByGoalId =
         Progress.create 13
 
 module QueryHandler = 
-    let handle<'T> (query:obj) =
+    let handle<'TQuery, 'TResult> (query:'TQuery)  : ResultType.Result<'TResult> =
         let result = 
-            match query with
-            | :? GetGoalById.Query as q -> GetGoalById.handle q :> obj
-            | :? GetGoalProgressByGoalId.Query as q -> GetGoalProgressByGoalId.handle q :> obj
+            match box query with
+            | :? GetGoalById.Query as q -> GetGoalById.handle q |> box
+            | :? GetGoalProgressByGoalId.Query as q -> GetGoalProgressByGoalId.handle q |> box
             
             | _ -> raise (new NotImplementedException("handler for that query is not implemented"))
-        result :?> ResultType.Result<'T>
+        unbox result
